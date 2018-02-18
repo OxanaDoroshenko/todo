@@ -1,0 +1,7 @@
+.tasks{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin: 7px;
+    min-height: 200px;
+}
