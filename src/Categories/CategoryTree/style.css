@@ -1,3 +1,7 @@
 .category__tree__actions{
     width: 72px;
 }
+
+.category__tree__item--nested{
+    padding-left: 14px;
+}
