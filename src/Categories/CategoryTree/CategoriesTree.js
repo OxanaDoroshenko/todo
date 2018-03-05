@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {observer} from 'mobx-react';
 
 //material components
 import Edit from 'material-ui-icons/ModeEdit';
@@ -13,90 +14,141 @@ import Collapse from 'material-ui/transitions/Collapse';
 //styles
 import './style.css';
 
+const taskData = {
+    byId: {
+        0: {
+            id: 0,
+            categoryId: 0,
+            isDone: false,
+            text: 'TO do test task',
+        },
+        1: {
+            id: 1,
+            categoryId: 1,
+            isDone: false,
+            text: 'TO do test task',
+        }
+    }
+};
+
+const tasksIds = [0,1,]
+
+export const getAllTasks = () => {
+    return tasksIds.map((taskId) => taskData.byId[taskId]);
+};
+
+export const getTasksByCategoryId = (categoryId) => {
+    const allTasks = getAllTasks();
+    return allTasks.filter((task) => task.categoryId == categoryId);
+}
+
+
 const categoryData = {
+    selectedCategory: 0,
+    byId: {
         0: {
             id: 0,
             name: 'category 1',
             isOpen: true,
             subCategories: [2, 3, 7],
+            tasks: [0,],
+            isSelected:true,
         },
         2: {
             id: 2,
             parentCategoryId: 0,
             isOpen: true,
             name: 'category 1 1',
-            subCategories: [9]
+            subCategories: [9],
+            isSelected:false,
         },
         3: {
             id: 3,
             isOpen: true,
             parentCategoryId: 0,
             name: 'category 1 2',
-            subCategories: [10]
+            subCategories: [10],
+            isSelected:false,
         },
         7: {
             id: 7,
             parentCategoryId: 0,
             name: 'category 1 7',
-            subCategories: []
+            subCategories: [],
+            isSelected:false,
         },
         9: {
             id: 9,
             parentCategoryId: 2,
             name: 'category 1 1 9',
-            subCategories: []
+            subCategories: [],
+            isSelected:false,
         },
         10: {
             id: 10,
             parentCategoryId: 3,
             name: 'category 1 2 10',
-            subCategories: []
+            subCategories: [],
+            isSelected:false,
         },
         4: {
             id: 4,
             isOpen: false,
             name: 'category 2',
             subCategories: [],
+            isSelected:false,
         },
         5: {
             id: 5,
             isOpen: false,
             name: 'category 3',
             subCategories: [],
+            isSelected:false,
         }
-    };
-
-const categoryIds = [0,2,3,4,5];
-
-export const getAllCategories = () =>{
-    return categoryIds.map((categoryId) => categoryData[categoryId]);
+    }
 };
 
+const categoryIds = [0, 2, 3, 4, 5];
 
+export const getAllCategories = () => {
+    return categoryIds.map((categoryId) => categoryData.byId[categoryId]);
+};
+
+@observer
 class CategoriesTree extends Component {
     constructor(props) {
         super(props);
     }
 
-    toggleOpenState = (id) =>{
+    toggleOpenState = (id) => {
 
     }
 
-    getSubtree = (subCategories, dataById) =>{
+    handleRequestChange(event, index) {
+        this.setState({
+            selectedIndex: index,
+        });
+        console.log(index);
+    };
+
+    getSubtree = (subCategories, dataById) => {
+        const {store} = this.props;
         let childList = [];
         for (let j = 0; j < subCategories.length; ++j) {
             const subCategoryIndex = subCategories[j];
             const targetCategory = dataById[subCategoryIndex];
             let prevListItemIcon = targetCategory.isOpen
-                ? <ListItemIcon>
+                ? <ListItemIcon onClick={()=>{store.toggleCategoryOpenState(targetCategory.id)}}>
                     <ArrowDropup />
                 </ListItemIcon>
-                : <ListItemIcon>
+                : <ListItemIcon onClick={()=>{store.toggleCategoryOpenState(targetCategory.id)}}>
                     <ArrowDropdown />
                 </ListItemIcon>;
             childList.push(
                 <ListItem button
+                          style={{ backgroundColor: targetCategory.isSelected ? '#cccccc' : 'transparent'}}
                           className="category__tree__item--nested"
+                          onClick = {()=>{store.selectCategory(targetCategory.id)}}
                           key={`category-${targetCategory.id}`}>
                     {prevListItemIcon}
                     <ListItemText inset primary={targetCategory.name}/>
@@ -116,7 +168,8 @@ class CategoriesTree extends Component {
                 ? this.getSubtree(targetCategory.subCategories, dataById)
                 : null;
             childList.push(
-                <Collapse in={targetCategory.isOpen} timeout="auto" unmountOnExit key={`childList-${targetCategory.id}`}>
+                <Collapse in={targetCategory.isOpen} timeout="auto" unmountOnExit
+                          key={`childList-${targetCategory.id}`}>
                     <List component="div">
                         {newChildList}
                     </List>
@@ -127,19 +180,22 @@ class CategoriesTree extends Component {
     }
 
     getCategoriesTree = (data, dataById) => {
+        const {store} = this.props;
         const categoriesTree = [];
         for (let i = 0; i < data.length; ++i) {
             if (typeof data[i].parentCategoryId == 'undefined') {
                 let prevListItemIcon = data[i].isOpen
-                    ? <ListItemIcon>
+                    ? <ListItemIcon onClick={()=>{store.toggleCategoryOpenState(data[i].id)}}>
                         <ArrowDropup />
                     </ListItemIcon>
-                    : <ListItemIcon>
+                    : <ListItemIcon onClick={()=>{store.toggleCategoryOpenState(data[i].id)}}>
                         <ArrowDropdown />
                     </ListItemIcon>;
                 categoriesTree.push(
                     <ListItem button
+                              style={{ backgroundColor: data[i].isSelected ? '#cccccc' : 'transparent'}}
                               className="category__tree__item"
+                              onClick = {()=>{store.selectCategory(data[i].id)}}
                               key={`category-${data[i].id}`}>
                         {prevListItemIcon}
                         <ListItemText inset primary={data[i].name}/>
@@ -169,7 +225,10 @@ class CategoriesTree extends Component {
     };
 
     render() {
-        const categoriesTree = this.getCategoriesTree(getAllCategories(categoryData), categoryData);
+        const {store} = this.props;
+        console.log(this.props);
+        // console.log(store.getAllCategories,store.categoryData, store);
+        const categoriesTree = this.getCategoriesTree(store.getAllCategories, store.categoryData.byId);
         return (
             <div className="category__tree">
                 {categoriesTree}

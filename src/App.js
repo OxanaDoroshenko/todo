@@ -1,5 +1,8 @@
 // import libraries
 import React, {Component} from 'react';
+import DevTools from 'mobx-react-devtools'
+
+import observableTodoStore from './Store/Category';
 
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import Reboot from 'material-ui/Reboot';
@@ -17,12 +20,13 @@ const theme = createMuiTheme();
 
 class App extends Component {
     render() {
-        return (
+      return (
             <MuiThemeProvider theme={theme}>
+                <DevTools/>
                 <Reboot/>
                 <div className="App">
-                    <Categories/>
-                    <Tasks/>
+                    <Categories store={ observableTodoStore }/>
+                    <Tasks store={ observableTodoStore }/>
                 </div>
             </MuiThemeProvider>
         );

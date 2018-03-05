@@ -13,7 +13,7 @@ class Categories extends Component {
         return (
         <Paper className="category">
                 <CreateForm/>
-                <CategoriesTree/>
+                <CategoriesTree store = {this.props.store}/>
         </Paper>
         );
     }

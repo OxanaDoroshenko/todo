@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {observer} from "mobx-react";
 
 //material components
 import Checkbox from 'material-ui/Checkbox';
@@ -29,7 +30,7 @@ const tasksData = [
         categoryId: 1,
     }
 ];
-
+@observer
 class TasksList extends Component {
     state = {
         checked: [0],
@@ -51,10 +52,11 @@ class TasksList extends Component {
     };
 
     render() {
+        const {store} = this.props;
         return (
             <div className="tasks__list">
                 <List>
-                    {tasksData.map((task, index) => (
+                    {store.getSelectedTasks.map((task, index) => (
                         <ListItem
                             className="tasks__list__item"
                             key={`task-${index}`}

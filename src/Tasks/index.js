@@ -15,7 +15,7 @@ class Tasks extends Component {
         return (
             <Paper className="tasks">
                 <TasksFilter/>
-                <TasksList/>
+                <TasksList store = {this.props.store}/>
             </Paper>
         );
     }
