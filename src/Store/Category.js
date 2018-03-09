@@ -74,7 +74,7 @@ class TodoStore {
 
     @computed get getSelectedTasks() {
         const tasks = this.tasksIds.map((taskId) => this.tasks.byId[taskId]);
-        return tasks.filter((task)=> task.categoryId === this.categoryData.selectedCategoryId);
+        return tasks.filter((task) => task.categoryId === this.categoryData.selectedCategoryId);
     };
 
     @observable tasks = {
@@ -124,20 +124,29 @@ class TodoStore {
         this.categoryData.byId[id].isOpen = !this.categoryData.byId[id].isOpen;
     }
 
-    selectCategory(id) {
-        for (let i in this.categoryData.byId) {
-            this.categoryData.byId[i].isSelected = false;
+    toggleCategorySelectState(id, state) {
+        if (state) {
+            for (let i in this.categoryData.byId) {
+                this.categoryData.byId[i].isSelected = false;
+            }
+            this.categoryData.byId[id].isSelected = true;
+            this.categoryData.selectedCategoryId = id;
+        } else {
+            this.categoryData.byId[id].isSelected = false;
+            this.categoryData.selectedCategoryId = null;
         }
-        this.categoryData.byId[id].isSelected = true;
-        this.categoryData.selectedCategoryId = id;
+    }
+
+    @computed get isSelectedCatagory(){
+        return typeof this.categoryData.selectedCategoryId == 'number';
     }
 }
 
 const todoStore = new TodoStore();
 
 autorun(() => {
-    // console.log(todoStore.getAllCategories);
-    console.log(todoStore.getSelectedTasks);
+    console.log(todoStore.getAllCategories);
+    console.log(todoStore.categoryData.selectedCategoryId);
 })
 
 

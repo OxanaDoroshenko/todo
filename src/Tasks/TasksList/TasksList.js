@@ -10,46 +10,27 @@ import IconButton from 'material-ui/IconButton';
 //import styles
 import './style.css';
 
-const tasksData = [
-    {
-        id: 0,
-        name: 'task 1',
-        isDone: true,
-        categoryId: 1,
-    },
-    {
-        id: 1,
-        name: 'task 2',
-        isDone: false,
-        categoryId: 1,
-    },
-    {
-        id: 3,
-        name: 'task 3',
-        isDone: false,
-        categoryId: 1,
-    }
-];
+
 @observer
 class TasksList extends Component {
     state = {
         checked: [0],
     };
-    handleToggle = value => () => {
-        const {checked} = this.state;
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-
-        this.setState({
-            checked: newChecked,
-        });
-    };
+    // handleToggle = value => () => {
+    //     const {checked} = this.state;
+    //     const currentIndex = checked.indexOf(value);
+    //     const newChecked = [...checked];
+    //
+    //     if (currentIndex === -1) {
+    //         newChecked.push(value);
+    //     } else {
+    //         newChecked.splice(currentIndex, 1);
+    //     }
+    //
+    //     this.setState({
+    //         checked: newChecked,
+    //     });
+    // };
 
     render() {
         const {store} = this.props;
