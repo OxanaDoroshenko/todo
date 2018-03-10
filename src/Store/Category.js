@@ -1,6 +1,9 @@
-import {observable, computed, autorun} from "mobx";
+import {observable, computed, action, autorun} from "mobx";
 
 class TodoStore {
+    /*
+    category list data
+     */
     @observable categoryData = {
         selectedCategoryId: 0,
         byId: {
@@ -68,15 +71,24 @@ class TodoStore {
 
     @observable categoryIds = [0, 2, 3, 4, 5];
 
+    /*
+    make array from category list object
+     */
     @computed get getAllCategories() {
         return this.categoryIds.map((categoryId) => this.categoryData.byId[categoryId]);
     };
 
+    /*
+    get all tasks by id of selected category
+     */
     @computed get getSelectedTasks() {
         const tasks = this.tasksIds.map((taskId) => this.tasks.byId[taskId]);
         return tasks.filter((task) => task.categoryId === this.categoryData.selectedCategoryId);
     };
 
+    /*
+     tasks list data
+     */
     @observable tasks = {
         byId: {
             [0]: {
@@ -100,27 +112,44 @@ class TodoStore {
         }
     };
     @observable tasksIds = [0, 1, 2];
-    // get completedTodosCount() {
-    //     return this.todos.filter(
-    //         todo => todo.completed === true
-    //     ).length;
-    // }
-    //
-    // report() {
-    //     if (this.todos.length === 0)
-    //         return "<none>";
-    //     return `Next todo: "${this.todos[0].task}". ` +
-    //         `Progress: ${this.completedTodosCount}/${this.todos.length}`;
-    // }
-    //
-    // addTodo(task) {
-    //     this.todos.push({
-    //         task: task,
-    //         completed: false,
-    //         assignee: null
-    //     });
-    // }
+
+    @action addCategory(category) {
+        const categoryId = this.nextCategoryId;
+        const newCategory = {
+            ...category,
+            id: categoryId,
+            isOpen: false,
+            subCategories: [],
+            tasks: [],
+            isSelected: false,
+        };
+        this.categoryIds.unshift(categoryId);
+        this.categoryData.byId[categoryId] = newCategory;
+    }
+
+    @action addNestedCategory(category){
+        const categoryId = this.nextCategoryId;
+        const parentId = category.parentCategoryId;
+        const parentCategoryChildren = this.categoryData.byId[parentId].subCategories.concat([categoryId]);
+        const newCategory = {
+            ...category,
+            id: categoryId,
+            isOpen: false,
+            subCategories: [],
+            tasks: [],
+            isSelected: false,
+        };
+        this.categoryIds.unshift(categoryId);
+        this.categoryData.byId[categoryId] = newCategory;
+        this.categoryData.byId[parentId].subCategories = parentCategoryChildren;
+    }
+
+    @action updateCategory(id, category){
+        this.categoryData.byId[id] = {...this.categoryData.byId[id], ...category};
+    }
+
     toggleCategoryOpenState(id) {
+        //TODO ad prevent default (reject selecting on opening)
         this.categoryData.byId[id].isOpen = !this.categoryData.byId[id].isOpen;
     }
 
@@ -137,15 +166,83 @@ class TodoStore {
         }
     }
 
+    /*
+    is any category in list was selected
+     */
     @computed get isSelectedCatagory(){
         return typeof this.categoryData.selectedCategoryId == 'number';
+    }
+
+    /*
+    get category id for new category
+     */
+    @computed get nextCategoryId (){
+        const maxCategoryId = this.categoryIds.length ? Math.max(...this.categoryIds) : 0;
+        return maxCategoryId + 1;
+    }
+
+    /*
+    is category modal form active (visible)
+     */
+    @observable isEditingCategory = false;
+    @observable isEditingTask = false;
+
+    /*
+    initial data for category modal form
+     */
+    @observable editingCategoryData = {
+        name: '',
+        id: null,
+        parentId: null,
+    };
+
+    /*
+    check is an edit mode in category model form
+     */
+    @computed get isCategoryEditing(){
+        return this.editingCategoryData.mode === 'edit';
+    }
+
+    /*
+    set initial data for editing category
+     */
+    @action initCategoryEditing(editingData){
+        this.isEditingCategory = true;
+        this.editingCategoryData = {...editingData, mode: 'edit'};
+    }
+
+    /*
+    set initial data for created nested category
+     */
+    @action initNestedCategoryCreating(editingData){
+        this.isEditingCategory = true;
+        this.editingCategoryData = {parentId: editingData.id, mode: 'create'};
+    }
+    /*
+    reset category modal form data by closing modal
+     */
+    @action closeEditingCategoryDialog(isEditing, categoryId = null){
+        this.isEditingCategory = false;
+        this.editingCategoryData = {
+            name: '',
+            id: null,
+            parentId: null,
+        };
+    }
+    /*
+    changing data in modal form in realtime
+     */
+    @action changeCategoryData(data){
+        this.editingCategoryData = {
+            ...this.editingCategoryData,
+            ...data,
+        };
     }
 }
 
 const todoStore = new TodoStore();
 
 autorun(() => {
-    console.log(todoStore.getAllCategories);
     console.log(todoStore.categoryData.selectedCategoryId);
 })
 

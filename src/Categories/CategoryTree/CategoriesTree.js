@@ -19,6 +19,20 @@ class CategoriesTree extends Component {
     // constructor(props) {
     //     super(props);
     // }
+    getCategoryActions = (category) => {
+        return <ListItemSecondaryAction>
+            <IconButton aria-label="Actions" onClick={()=>{this.props.store.initCategoryEditing(category)}}>
+                <Edit />
+            </IconButton>
+            <IconButton aria-label="Actions" onClick={()=>{this.props.store.initNestedCategoryCreating(category)}}>
+                <Add />
+            </IconButton>
+            <IconButton aria-label="Actions">
+                <Delete />
+            </IconButton>
+        </ListItemSecondaryAction>;
+    };
+
     getSubtree = (subCategories, dataById) => {
         const {store} = this.props;
         let childList = [];
@@ -46,17 +60,7 @@ class CategoriesTree extends Component {
                           key={`category-${targetCategory.id}`}>
                     {prevListItemIcon}
                     <ListItemText inset primary={targetCategory.name}/>
-                    <ListItemSecondaryAction>
-                        <IconButton aria-label="Actions">
-                            <Edit />
-                        </IconButton>
-                        <IconButton aria-label="Actions">
-                            <Add />
-                        </IconButton>
-                        <IconButton aria-label="Actions">
-                            <Delete />
-                        </IconButton>
-                    </ListItemSecondaryAction>
+                    {this.getCategoryActions(targetCategory)}
                 </ListItem>)
             const newChildList = targetCategory.subCategories.length
                 ? this.getSubtree(targetCategory.subCategories, dataById)
@@ -99,17 +103,7 @@ class CategoriesTree extends Component {
                               key={`category-${data[i].id}`}>
                         {prevListItemIcon}
                         <ListItemText inset primary={data[i].name}/>
-                        <ListItemSecondaryAction>
-                            <IconButton aria-label="Actions">
-                                <Edit />
-                            </IconButton>
-                            <IconButton aria-label="Actions">
-                                <Add />
-                            </IconButton>
-                            <IconButton aria-label="Actions">
-                                <Delete />
-                            </IconButton>
-                        </ListItemSecondaryAction>
+                        {this.getCategoryActions(data[i])}
                     </ListItem>);
                 let childList = this.getSubtree(data[i].subCategories, dataById);
                 categoriesTree.push(
