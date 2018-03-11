@@ -4,4 +4,7 @@
     flex: 1;
     margin: 7px;
     min-height: 200px;
+    &__empty{
+        display: none;
+    }
 }

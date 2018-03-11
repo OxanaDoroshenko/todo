@@ -7,15 +7,15 @@ import EditingDialog from './CategoryDialog/CategoryDialog';
 import Paper from 'material-ui/Paper';
 
 //import styles
-import './style.css';
+import './style.scss';
 
 class Categories extends Component {
     render() {
         return (
         <Paper className="category">
-                <CreateForm store = {this.props.store}/>
-                <CategoriesTree store = {this.props.store}/>
-                <EditingDialog store = {this.props.store}/>
+                <CreateForm/>
+                <CategoriesTree/>
+                <EditingDialog/>
         </Paper>
         );
     }

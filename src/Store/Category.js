@@ -1,6 +1,6 @@
 import {observable, computed, action, autorun} from "mobx";
 
-class TodoStore {
+class CategoriesStore {
     /*
     category list data
      */
@@ -78,41 +78,6 @@ class TodoStore {
         return this.categoryIds.map((categoryId) => this.categoryData.byId[categoryId]);
     };
 
-    /*
-    get all tasks by id of selected category
-     */
-    @computed get getSelectedTasks() {
-        const tasks = this.tasksIds.map((taskId) => this.tasks.byId[taskId]);
-        return tasks.filter((task) => task.categoryId === this.categoryData.selectedCategoryId);
-    };
-
-    /*
-     tasks list data
-     */
-    @observable tasks = {
-        byId: {
-            [0]: {
-                id: 0,
-                categoryId: 0,
-                name: 'to do 1',
-                isDone: false,
-            },
-            [1]: {
-                id: 1,
-                categoryId: 1,
-                name: 'to do 2',
-                isDone: false,
-            },
-            [2]: {
-                id: 2,
-                categoryId: 2,
-                name: 'to do 3',
-                isDone: false,
-            }
-        }
-    };
-    @observable tasksIds = [0, 1, 2];
-
     @action addCategory(category) {
         const categoryId = this.nextCategoryId;
         const newCategory = {
@@ -189,7 +154,6 @@ class TodoStore {
     is category modal form active (visible)
      */
     @observable isEditingCategory = false;
-    @observable isEditingTask = false;
 
     /*
     initial data for editing category modal form
@@ -259,11 +223,11 @@ class TodoStore {
     }
 }
 
-const todoStore = new TodoStore();
+const categoriesStore = new CategoriesStore();
 
 autorun(() => {
-    console.log(todoStore.categoryData.selectedCategoryId);
+    console.log(categoriesStore.categoryData.selectedCategoryId);
 })
 
 
-export default todoStore;
+export default categoriesStore;

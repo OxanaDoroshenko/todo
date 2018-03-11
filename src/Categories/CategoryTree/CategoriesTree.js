@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {observer} from 'mobx-react';
+import {observer, inject} from 'mobx-react';
 
 //material components
 import Edit from 'material-ui-icons/ModeEdit';
@@ -12,19 +12,21 @@ import IconButton from 'material-ui/IconButton';
 import Collapse from 'material-ui/transitions/Collapse';
 
 //styles
-import './style.css';
+import './style.scss';
 
+@inject('categoriesStore')
 @observer
 class CategoriesTree extends Component {
     // constructor(props) {
     //     super(props);
     // }
     getCategoryActions = (category) => {
+        const {categoriesStore} = this.props;
         return <ListItemSecondaryAction>
-            <IconButton aria-label="Actions" onClick={()=>{this.props.store.initCategoryEditing(category)}}>
+            <IconButton aria-label="Actions" onClick={()=>{categoriesStore.initCategoryEditing(category)}}>
                 <Edit />
             </IconButton>
-            <IconButton aria-label="Actions" onClick={()=>{this.props.store.initNestedCategoryCreating(category)}}>
+            <IconButton aria-label="Actions" onClick={()=>{categoriesStore.initNestedCategoryCreating(category)}}>
                 <Add />
             </IconButton>
             <IconButton aria-label="Actions">
@@ -34,19 +36,19 @@ class CategoriesTree extends Component {
     };
 
     getSubtree = (subCategories, dataById) => {
-        const {store} = this.props;
+        const {categoriesStore} = this.props;
         let childList = [];
         for (let j = 0; j < subCategories.length; ++j) {
             const subCategoryIndex = subCategories[j];
             const targetCategory = dataById[subCategoryIndex];
             let prevListItemIcon = targetCategory.isOpen
                 ? <ListItemIcon onClick={() => {
-                    store.toggleCategoryOpenState(targetCategory.id)
+                    categoriesStore.toggleCategoryOpenState(targetCategory.id)
                 }}>
                     <ArrowDropup />
                 </ListItemIcon>
                 : <ListItemIcon onClick={() => {
-                    store.toggleCategoryOpenState(targetCategory.id)
+                    categoriesStore.toggleCategoryOpenState(targetCategory.id)
                 }}>
                     <ArrowDropdown />
                 </ListItemIcon>;
@@ -55,7 +57,7 @@ class CategoriesTree extends Component {
                           style={{backgroundColor: targetCategory.isSelected ? '#cccccc' : 'transparent'}}
                           className="category__tree__item--nested"
                           onClick={() => {
-                              store.toggleCategorySelectState(targetCategory.id, !targetCategory.isSelected)
+                              categoriesStore.toggleCategorySelectState(targetCategory.id, !targetCategory.isSelected)
                           }}
                           key={`category-${targetCategory.id}`}>
                     {prevListItemIcon}
@@ -78,18 +80,18 @@ class CategoriesTree extends Component {
     }
 
     getCategoriesTree = (data, dataById) => {
-        const {store} = this.props;
+        const {categoriesStore} = this.props;
         const categoriesTree = [];
         for (let i = 0; i < data.length; ++i) {
             if (typeof data[i].parentCategoryId === 'undefined') {
                 let prevListItemIcon = data[i].isOpen
                     ? <ListItemIcon onClick={() => {
-                        store.toggleCategoryOpenState(data[i].id)
+                        categoriesStore.toggleCategoryOpenState(data[i].id)
                     }}>
                         <ArrowDropup />
                     </ListItemIcon>
                     : <ListItemIcon onClick={() => {
-                        store.toggleCategoryOpenState(data[i].id)
+                        categoriesStore.toggleCategoryOpenState(data[i].id)
                     }}>
                         <ArrowDropdown />
                     </ListItemIcon>;
@@ -98,7 +100,7 @@ class CategoriesTree extends Component {
                               style={{backgroundColor: data[i].isSelected ? '#cccccc' : 'transparent'}}
                               className="category__tree__item"
                               onClick={() => {
-                                  store.toggleCategorySelectState(data[i].id, !data[i].isSelected)
+                                  categoriesStore.toggleCategorySelectState(data[i].id, !data[i].isSelected)
                               }}
                               key={`category-${data[i].id}`}>
                         {prevListItemIcon}
@@ -119,8 +121,8 @@ class CategoriesTree extends Component {
     };
 
     render() {
-        const {store} = this.props;
-        const categoriesTree = this.getCategoriesTree(store.getAllCategories, store.categoryData.byId);
+        const {categoriesStore} = this.props;
+        const categoriesTree = this.getCategoriesTree(categoriesStore.getAllCategories, categoriesStore.categoryData.byId);
         return (
             <div className="category__tree">
                 {categoriesTree}

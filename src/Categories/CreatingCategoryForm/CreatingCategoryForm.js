@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
+import {inject} from 'mobx-react';
 
 //material components
 import Input from 'material-ui/Input';
 import Button from 'material-ui/Button';
 
 //styles
-import './style.css';
+import './style.scss';
 
+@inject('categoriesStore')
 class CreatingCategoryForm extends Component {
     constructor(props){
         super(props);
@@ -20,7 +22,7 @@ class CreatingCategoryForm extends Component {
         })
     };
     render() {
-        const {store} = this.props;
+        const {categoriesStore} = this.props;
         return (
             <div className="category__form">
                 <Input
@@ -32,7 +34,7 @@ class CreatingCategoryForm extends Component {
                     }}
                 />
                 <Button variant="raised"
-                        onClick={()=>{store.addCategory({name: this.state.categoryName})}}
+                        onClick={()=>{categoriesStore.addCategory({name: this.state.categoryName})}}
                         size="small"
                         color="primary">
                     Add
