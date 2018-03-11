@@ -148,6 +148,10 @@ class TodoStore {
         this.categoryData.byId[id] = {...this.categoryData.byId[id], ...category};
     }
 
+    @action deleteCategory(id){
+        //TODO remove category with id="id" && all tasks with categoryId = "id"
+    }
+
     toggleCategoryOpenState(id) {
         //TODO ad prevent default (reject selecting on opening)
         this.categoryData.byId[id].isOpen = !this.categoryData.byId[id].isOpen;
@@ -170,7 +174,7 @@ class TodoStore {
     is any category in list was selected
      */
     @computed get isSelectedCatagory(){
-        return typeof this.categoryData.selectedCategoryId == 'number';
+        return typeof this.categoryData.selectedCategoryId === 'number';
     }
 
     /*
@@ -188,12 +192,20 @@ class TodoStore {
     @observable isEditingTask = false;
 
     /*
-    initial data for category modal form
+    initial data for editing category modal form
      */
     @observable editingCategoryData = {
         name: '',
         id: null,
         parentId: null,
+    };
+
+    /*
+    initial data for editing category modal form
+     */
+    @observable deletingCategoryData = {
+        name: '',
+        id: null,
     };
 
     /*
@@ -207,6 +219,13 @@ class TodoStore {
     set initial data for editing category
      */
     @action initCategoryEditing(editingData){
+        this.isEditingCategory = true;
+        this.editingCategoryData = {...editingData, mode: 'edit'};
+    }
+    /*
+    set initial data for deleting category
+     */
+    @action initCategoryDeleting(editingData){
         this.isEditingCategory = true;
         this.editingCategoryData = {...editingData, mode: 'edit'};
     }

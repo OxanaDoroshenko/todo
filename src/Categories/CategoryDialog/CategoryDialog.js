@@ -1,10 +1,8 @@
-import Input from 'material-ui/Input';
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import Dialog, {
     DialogActions,
     DialogContent,
-    DialogContentText,
     DialogTitle,
 } from 'material-ui/Dialog';
 import Button from 'material-ui/Button';

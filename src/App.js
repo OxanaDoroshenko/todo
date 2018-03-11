@@ -20,6 +20,7 @@ const theme = createMuiTheme();
 
 class App extends Component {
     render() {
+        debugger;
       return (
             <MuiThemeProvider theme={theme}>
                 <DevTools/>
