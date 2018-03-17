@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {observer} from "mobx-react";
+import {observer, inject} from "mobx-react";
 
 //custom components
 import TasksFilter from './TasksFilter/TasksFilter';
@@ -11,19 +11,20 @@ import Paper from 'material-ui/Paper';
 //import styles
 import './style.scss';
 
+@inject('categoriesStore')
 @observer
 class Tasks extends Component {
     render() {
-        const {store} = this.props;
+        const {categoriesStore} = this.props;
         // const styles = {
         //     container: {
         //         display: store.isSelectedCatagory ? 'block' : 'none',
         //     }
         // }
         return (
-            <Paper className={`tasks ${!store.isSelectedCatagory ? 'tasks__empty' : ''}`}>
+            <Paper className={`tasks ${!categoriesStore.isSelectedCatagory ? 'tasks__empty' : ''}`}>
                 <TasksFilter/>
-                <TasksList store = {store}/>
+                <TasksList/>
             </Paper>
         );
     }

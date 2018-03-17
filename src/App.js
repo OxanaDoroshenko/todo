@@ -6,6 +6,9 @@ import categoriesStore from './Store/Category';
 import tasksStore from './Store/Task';
 
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+// src/components/App.js
+
+import { Provider } from 'mobx-react';
 import Reboot from 'material-ui/Reboot';
 
 //import components
@@ -22,14 +25,17 @@ const theme = createMuiTheme();
 class App extends Component {
     render() {
       return (
-            <MuiThemeProvider theme={theme} categoriesStore={ categoriesStore } tasksStore={ tasksStore }>
-                <DevTools/>
-                <Reboot/>
-                <div className="App">
-                    <Categories/>
-                    <Tasks/>
-                </div>
-            </MuiThemeProvider>
+      <Provider categoriesStore={ categoriesStore } tasksStore={ tasksStore }>
+          <MuiThemeProvider theme={theme} >
+              <DevTools/>
+              <Reboot/>
+              <div className="App">
+                  <Categories/>
+                  <Tasks/>
+              </div>
+          </MuiThemeProvider>
+      </Provider>
+
         );
     }
 }

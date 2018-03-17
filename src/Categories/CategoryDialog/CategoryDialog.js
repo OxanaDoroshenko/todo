@@ -6,41 +6,43 @@ import Dialog, {
     DialogTitle,
 } from 'material-ui/Dialog';
 import Button from 'material-ui/Button';
-import {observer} from 'mobx-react';
+import {observer, inject} from 'mobx-react';
 
+@inject('categoriesStore')
 @observer
 class CategoryEditingDialog extends React.Component {
     constructor(props) {
         super(props);
+        const {categoriesStore} = this.props;
         this.state = {
-            categoryName: this.props.store.editingCategoryData.name,
+            categoryName: categoriesStore.editingCategoryData.name,
         }
     }
 
     handleClose = () => {
-        const {store} = this.props;
-        store.closeEditingCategoryDialog();
+        const {categoriesStore} = this.props;
+        categoriesStore.closeEditingCategoryDialog();
     };
 
     submitCategory = () => {
-        const {store} = this.props;
-        store.isCategoryEditing
-            ? store.updateCategory(store.editingCategoryData.id, {name:store.editingCategoryData.name})
-            : store.addNestedCategory({name: store.editingCategoryData.name, parentCategoryId: store.editingCategoryData.parentId})
-        store.closeEditingCategoryDialog();
+        const {categoriesStore} = this.props;
+        categoriesStore.isCategoryEditing
+            ? categoriesStore.updateCategory(categoriesStore.editingCategoryData.id, {name:categoriesStore.editingCategoryData.name})
+            : categoriesStore.addNestedCategory({name: categoriesStore.editingCategoryData.name, parentCategoryId: categoriesStore.editingCategoryData.parentId})
+        categoriesStore.closeEditingCategoryDialog();
     };
 
     onChange = (event) => {
-        const {store} = this.props;
-        store.changeCategoryData({name: event.target.value});
+        const {categoriesStore} = this.props;
+        categoriesStore.changeCategoryData({name: event.target.value});
     };
 
     render() {
-        const {store} = this.props;
+        const {categoriesStore} = this.props;
         return (
             <div>
                 <Dialog
-                    open={store.isEditingCategory}
+                    open={categoriesStore.isEditingCategory}
                     onClose={this.handleClose}
                     aria-labelledby="form-dialog-title"
                 >
@@ -53,7 +55,7 @@ class CategoryEditingDialog extends React.Component {
                             margin="dense"
                             id="name"
                             label="Category name"
-                            value={this.props.store.editingCategoryData.name}
+                            value={categoriesStore.editingCategoryData.name}
                             type="text"
                             fullWidth
                         />

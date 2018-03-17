@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {observer} from "mobx-react";
+import {observer, inject} from "mobx-react";
 
 //material components
 import Checkbox from 'material-ui/Checkbox';
@@ -10,7 +10,8 @@ import IconButton from 'material-ui/IconButton';
 //import styles
 import './style.css';
 
-
+@inject('categoriesStore')
+@inject('tasksStore')
 @observer
 class TasksList extends Component {
     state = {
@@ -33,11 +34,13 @@ class TasksList extends Component {
     // };
 
     render() {
-        const {store} = this.props;
+        const {tasksStore, categoriesStore} = this.props;
+        const selectedCategory = categoriesStore.categoryData.selectedCategoryId;
+        const tasks = tasksStore.getTasksByCategoryId(selectedCategory);
         return (
             <div className="tasks__list">
                 <List>
-                    {store.getSelectedTasks.map((task, index) => (
+                    {tasks.map((task, index) => (
                         <ListItem
                             className="tasks__list__item"
                             key={`task-${index}`}

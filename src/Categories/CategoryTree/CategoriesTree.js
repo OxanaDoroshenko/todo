@@ -17,9 +17,6 @@ import './style.scss';
 @inject('categoriesStore')
 @observer
 class CategoriesTree extends Component {
-    // constructor(props) {
-    //     super(props);
-    // }
     getCategoryActions = (category) => {
         const {categoriesStore} = this.props;
         return <ListItemSecondaryAction>
@@ -29,7 +26,7 @@ class CategoriesTree extends Component {
             <IconButton aria-label="Actions" onClick={()=>{categoriesStore.initNestedCategoryCreating(category)}}>
                 <Add />
             </IconButton>
-            <IconButton aria-label="Actions">
+            <IconButton aria-label="Actions" onClick={()=>{categoriesStore.deleteCategory(category.id, true)}}>
                 <Delete />
             </IconButton>
         </ListItemSecondaryAction>;

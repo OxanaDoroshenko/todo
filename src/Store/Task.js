@@ -1,12 +1,12 @@
 import {observable, computed, action, autorun} from "mobx";
-import categoryStore from '../Store/Category';
+// import categoryStore from '../Store/Category';
 class TasksStore {
     /*
      get all tasks by id of selected category
      */
-    @computed get getSelectedTasks() {
+    getTasksByCategoryId(categoryId) {
         const tasks = this.tasksIds.map((taskId) => this.tasks.byId[taskId]);
-        return tasks.filter((task) => task.categoryId === categoryStore.selectedCategoryId);
+        return tasks.filter((task) => task.categoryId === categoryId);
     };
 
     /*
@@ -58,6 +58,5 @@ class TasksStore {
 }
 
 const tasksStore = new TasksStore();
-
 
 export default tasksStore;

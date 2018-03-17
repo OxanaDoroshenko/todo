@@ -2,77 +2,64 @@ import {observable, computed, action, autorun} from "mobx";
 
 class CategoriesStore {
     /*
-    category list data
+     category list data
      */
     @observable categoryData = {
-        selectedCategoryId: 0,
+        selectedCategoryId: null,
         byId: {
             0: {
                 id: 0,
-                name: 'category 1',
-                isOpen: true,
-                subCategories: [2, 3, 7],
+                name: 'category 0',
+                isOpen: false,
+                subCategories: [3,4,5],
                 tasks: [0,],
-                isSelected: true,
+                isSelected: false,
+            },
+            1: {
+                id: 1,
+                isOpen: true,
+                name: 'category 1',
+                subCategories: [],
+                isSelected: false,
             },
             2: {
                 id: 2,
-                parentCategoryId: 0,
                 isOpen: true,
-                name: 'category 1 1',
-                subCategories: [9],
+                name: 'category 2',
+                subCategories: [],
                 isSelected: false,
             },
             3: {
                 id: 3,
+                parentCategoryId: 0,
                 isOpen: true,
-                parentCategoryId: 0,
-                name: 'category 1 2',
-                subCategories: [10],
-                isSelected: false,
-            },
-            7: {
-                id: 7,
-                parentCategoryId: 0,
-                name: 'category 1 7',
-                subCategories: [],
-                isSelected: false,
-            },
-            9: {
-                id: 9,
-                parentCategoryId: 2,
-                name: 'category 1 1 9',
-                subCategories: [],
-                isSelected: false,
-            },
-            10: {
-                id: 10,
-                parentCategoryId: 3,
-                name: 'category 1 2 10',
+                name: 'category 0 3',
                 subCategories: [],
                 isSelected: false,
             },
             4: {
                 id: 4,
-                isOpen: false,
-                name: 'category 2',
+                parentCategoryId: 0,
+                isOpen: true,
+                name: 'category 0 4',
                 subCategories: [],
                 isSelected: false,
             },
             5: {
                 id: 5,
-                isOpen: false,
-                name: 'category 3',
+                parentCategoryId: 0,
+                isOpen: true,
+                name: 'category 0 5',
                 subCategories: [],
                 isSelected: false,
-            }
+            },
         }
     };
 
     @observable categoryIds = [0, 2, 3, 4, 5];
 
     /*
-    make array from category list object
+     make array from category list object
      */
     @computed get getAllCategories() {
         return this.categoryIds.map((categoryId) => this.categoryData.byId[categoryId]);
@@ -92,7 +79,7 @@ class CategoriesStore {
         this.categoryData.byId[categoryId] = newCategory;
     }
 
-    @action addNestedCategory(category){
+    @action addNestedCategory(category) {
         const categoryId = this.nextCategoryId;
         const parentId = category.parentCategoryId;
         const parentCategoryChildren = this.categoryData.byId[parentId].subCategories.concat([categoryId]);
@@ -109,12 +96,26 @@ class CategoriesStore {
         this.categoryData.byId[parentId].subCategories = parentCategoryChildren;
     }
 
-    @action updateCategory(id, category){
+    @action updateCategory(id, category) {
         this.categoryData.byId[id] = {...this.categoryData.byId[id], ...category};
     }
 
-    @action deleteCategory(id){
-        //TODO remove category with id="id" && all tasks with categoryId = "id"
+    @action deleteCategory(id, startDeleting) {
+        const parentId = this.categoryData.byId[id].parentCategoryId;
+        if (startDeleting){
+            if(typeof parentId!=='undefined'){
+                const subCategoryIds = this.categoryData.byId[parentId].subCategories;
+                this.categoryData.byId[parentId].subCategories = subCategoryIds.filter((subCategoryId)=>id!==subCategoryId);
+            }
+            this.categoryData.selectedCategoryId = null;
+        }
+        const subCategoryIds = this.categoryData.byId[id].subCategories;
+        delete this.categoryData.byId[id];
+        this.categoryIds = this.categoryIds.filter((categoryId) => categoryId !== id);
+        for (let i = 0; i < subCategoryIds.length; ++i) {
+            const delCategoryId = subCategoryIds[i];
+            this.deleteCategory(delCategoryId, false);
+        }
     }
 
     toggleCategoryOpenState(id) {
@@ -136,27 +137,27 @@ class CategoriesStore {
     }
 
     /*
-    is any category in list was selected
+     is any category in list was selected
      */
-    @computed get isSelectedCatagory(){
+    @computed get isSelectedCatagory() {
         return typeof this.categoryData.selectedCategoryId === 'number';
     }
 
     /*
-    get category id for new category
+     get category id for new category
      */
-    @computed get nextCategoryId (){
+    @computed get nextCategoryId() {
         const maxCategoryId = this.categoryIds.length ? Math.max(...this.categoryIds) : 0;
         return maxCategoryId + 1;
     }
 
     /*
-    is category modal form active (visible)
+     is category modal form active (visible)
      */
     @observable isEditingCategory = false;
 
     /*
-    initial data for editing category modal form
+     initial data for editing category modal form
      */
     @observable editingCategoryData = {
         name: '',
@@ -165,7 +166,7 @@ class CategoriesStore {
     };
 
     /*
-    initial data for editing category modal form
+     initial data for editing category modal form
      */
     @observable deletingCategoryData = {
         name: '',
@@ -173,38 +174,40 @@ class CategoriesStore {
     };
 
     /*
-    check is an edit mode in category model form
+     check is an edit mode in category model form
      */
-    @computed get isCategoryEditing(){
+    @computed get isCategoryEditing() {
         return this.editingCategoryData.mode === 'edit';
     }
 
     /*
-    set initial data for editing category
+     set initial data for editing category
      */
-    @action initCategoryEditing(editingData){
-        this.isEditingCategory = true;
-        this.editingCategoryData = {...editingData, mode: 'edit'};
-    }
-    /*
-    set initial data for deleting category
-     */
-    @action initCategoryDeleting(editingData){
+    @action initCategoryEditing(editingData) {
         this.isEditingCategory = true;
         this.editingCategoryData = {...editingData, mode: 'edit'};
     }
 
     /*
-    set initial data for created nested category
+     set initial data for deleting category
      */
-    @action initNestedCategoryCreating(editingData){
+    @action initCategoryDeleting(editingData) {
+        this.isEditingCategory = true;
+        this.editingCategoryData = {...editingData, mode: 'edit'};
+    }
+
+    /*
+     set initial data for created nested category
+     */
+    @action initNestedCategoryCreating(editingData) {
         this.isEditingCategory = true;
         this.editingCategoryData = {parentId: editingData.id, mode: 'create'};
     }
+
     /*
-    reset category modal form data by closing modal
+     reset category modal form data by closing modal
      */
-    @action closeEditingCategoryDialog(isEditing, categoryId = null){
+    @action closeEditingCategoryDialog(isEditing, categoryId = null) {
         this.isEditingCategory = false;
         this.editingCategoryData = {
             name: '',
@@ -212,10 +215,11 @@ class CategoriesStore {
             parentId: null,
         };
     }
+
     /*
-    changing data in modal form in realtime
+     changing data in modal form in realtime
      */
-    @action changeCategoryData(data){
+    @action changeCategoryData(data) {
         this.editingCategoryData = {
             ...this.editingCategoryData,
             ...data,

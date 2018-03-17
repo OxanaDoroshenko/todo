@@ -28,3 +28,5 @@ on the top of the categories list for parents categories.
 
 By clicking “Edit category” user can rename the category.
 
+When user deletes category all the nested categories are also become deleted.
+
