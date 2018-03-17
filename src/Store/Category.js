@@ -157,6 +157,11 @@ class CategoriesStore {
     @observable isEditingCategory = false;
 
     /*
+     is deleting category modal form active (visible)
+     */
+    @observable isDeletingCategory = false;
+
+    /*
      initial data for editing category modal form
      */
     @observable editingCategoryData = {
@@ -164,7 +169,6 @@ class CategoriesStore {
         id: null,
         parentId: null,
     };
-
     /*
      initial data for editing category modal form
      */
@@ -181,6 +185,13 @@ class CategoriesStore {
     }
 
     /*
+     check is an delete mode in category model form
+     */
+    @computed get isCategoryDeleting() {
+        return typeof this.deletingCategoryData.id !== 'undefined';
+    }
+
+    /*
      set initial data for editing category
      */
     @action initCategoryEditing(editingData) {
@@ -191,9 +202,9 @@ class CategoriesStore {
     /*
      set initial data for deleting category
      */
-    @action initCategoryDeleting(editingData) {
-        this.isEditingCategory = true;
-        this.editingCategoryData = {...editingData, mode: 'edit'};
+    @action initCategoryDeleting(deletingData) {
+        this.isDeletingCategory = true;
+        this.deletingCategoryData = {...deletingData};
     }
 
     /*
@@ -207,12 +218,22 @@ class CategoriesStore {
     /*
      reset category modal form data by closing modal
      */
-    @action closeEditingCategoryDialog(isEditing, categoryId = null) {
+    @action closeEditingCategoryDialog() {
         this.isEditingCategory = false;
         this.editingCategoryData = {
             name: '',
             id: null,
             parentId: null,
+        };
+    }
+    /*
+     reset category modal form data by closing modal
+     */
+    @action closeDeletingCategoryDialog() {
+        this.isDeletingCategory = false;
+        this.deletingCategoryData = {
+            name: '',
+            id: null,
         };
     }
 

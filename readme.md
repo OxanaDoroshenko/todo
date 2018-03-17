@@ -30,3 +30,5 @@ By clicking “Edit category” user can rename the category.
 
 When user deletes category all the nested categories are also become deleted.
 
+Confirmation should be shown. 
+

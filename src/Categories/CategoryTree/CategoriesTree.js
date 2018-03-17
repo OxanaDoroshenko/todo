@@ -26,7 +26,9 @@ class CategoriesTree extends Component {
             <IconButton aria-label="Actions" onClick={()=>{categoriesStore.initNestedCategoryCreating(category)}}>
                 <Add />
             </IconButton>
-            <IconButton aria-label="Actions" onClick={()=>{categoriesStore.deleteCategory(category.id, true)}}>
+            <IconButton aria-label="Actions" onClick={()=>{
+                categoriesStore.initCategoryDeleting(category);
+            }}>
                 <Delete />
             </IconButton>
         </ListItemSecondaryAction>;

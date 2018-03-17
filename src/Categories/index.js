@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import CreateForm from './CreatingCategoryForm/CreatingCategoryForm';
 import CategoriesTree from './CategoryTree/CategoriesTree';
 import EditingDialog from './CategoryDialog/CategoryDialog';
+import DeletingDialog from './DelConfirmDialog/DelConfirmDialog';
 import Paper from 'material-ui/Paper';
 
 //import styles
@@ -16,6 +17,7 @@ class Categories extends Component {
                 <CreateForm/>
                 <CategoriesTree/>
                 <EditingDialog/>
+                <DeletingDialog/>
         </Paper>
         );
     }
